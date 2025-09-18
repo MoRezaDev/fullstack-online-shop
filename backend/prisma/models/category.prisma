@@ -1,0 +1,11 @@
+model Category {
+    id String @id @default(cuid())
+
+    title String
+
+    parentId String?
+    parent Category? @relation("ParentToChild",fields: [parentId],references: [id])
+    children Category[] @relation("ParentToChild")
+
+    products Product[]
+}

@@ -1,6 +1,10 @@
 model Product {
     id String @id @default(cuid())
 
+    title String
+    url String
+    categoryId String
+    category Category @relation(fields: [categoryId],references: [id],onDelete: Cascade)
     
 
     orderItems OrderItem[]
