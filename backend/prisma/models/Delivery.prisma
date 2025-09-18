@@ -1,0 +1,11 @@
+model Delivery {
+    id String @id @default(cuid())
+
+    delivery_date String 
+    delivery_status String
+    is_delivered Boolean @default(false)
+
+    orderId String @unique
+    order Order @relation(fields: [orderId],references: [id],onDelete: Cascade)
+
+}

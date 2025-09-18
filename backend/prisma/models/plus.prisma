@@ -1,0 +1,16 @@
+model Plus {
+    id String @id @default(cuid())
+    is_activated Boolean @default(false)
+    expire_date DateTime?
+    plan Plan?
+
+    userId String @unique
+    user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+
+}
+
+enum Plan {
+    one_month
+    three_month
+    one_year
+}

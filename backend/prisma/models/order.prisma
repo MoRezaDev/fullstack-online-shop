@@ -1,0 +1,13 @@
+model Order {
+    id String @id @default(cuid())
+
+    order_number String @unique
+    price_details PriceDetails?
+    order_items OrderItem[]
+    address Address?
+    payments Payment[]
+    delivery_details Delivery?
+    
+    userId String
+    user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+}

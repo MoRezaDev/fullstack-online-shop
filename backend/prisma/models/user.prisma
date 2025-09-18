@@ -1,0 +1,18 @@
+model User {
+    id String @id @default(cuid())
+    mobile String @unique
+    full_name String?
+    address Address?
+    email String?
+    password String?
+    orders Order[]
+    comments Comment[]
+    plus Plus?
+    cart Cart?
+    role String @default("user")
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+}
+
