@@ -1,0 +1,12 @@
+model OpenGraph {
+    id String @id @default(cuid())
+
+    image String
+    site String
+    title String
+    type String
+    url String
+
+    seoId String @unique
+    seo Seo @relation(fields: [seoId],references: [id],onDelete: Cascade)
+}

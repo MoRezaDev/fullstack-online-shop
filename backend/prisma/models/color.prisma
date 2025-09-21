@@ -1,0 +1,7 @@
+model Color {
+    id Int @id @default(autoincrement())
+    title String
+    hex_code String
+
+    products Product[]
+}

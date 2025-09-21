@@ -1,0 +1,12 @@
+model Seo {
+    id String @id @default(cuid())
+
+    description String
+    title String
+    canonical_url String
+
+    open_graph OpenGraph?
+
+    productId String? @unique
+    product Product? @relation(fields: [productId],references: [id],onDelete: Cascade)
+}
