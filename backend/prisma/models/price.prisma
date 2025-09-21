@@ -1,0 +1,13 @@
+model Price {
+    id String @id @default(cuid())
+    
+    discount_percent Int?
+    sold_percent Int?
+    actual_price Int
+    selling_price Int
+    is_incredible Boolean @default(false)
+    order_limit Int?
+}
+
+
+

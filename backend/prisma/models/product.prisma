@@ -2,6 +2,7 @@ model Product {
     id String @id @default(cuid())
 
     name String @unique
+    description String
 
     title String
     url String
@@ -12,8 +13,7 @@ model Product {
 
     brand_category_url String
 
-    brandId String
-    brand Brand @relation(fields: [brandId],references: [id],onDelete: Cascade)
+   
     
     seo Seo?
 
