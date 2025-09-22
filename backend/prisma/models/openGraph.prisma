@@ -9,4 +9,7 @@ model OpenGraph {
 
     seoId String @unique
     seo Seo @relation(fields: [seoId],references: [id],onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }

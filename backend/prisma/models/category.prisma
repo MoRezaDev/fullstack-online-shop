@@ -12,4 +12,7 @@ model Category {
     parents String[]
     products Product[]
     breadcrumb Breadcrumb[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }

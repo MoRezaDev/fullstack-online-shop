@@ -4,4 +4,9 @@ model Color {
     hex_code String
 
     products Product[]
+
+    purchased_item PurchasedItem[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }

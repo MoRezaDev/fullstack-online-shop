@@ -15,4 +15,7 @@ model Address {
 
     orderId String @unique
     order Order @relation(fields: [orderId],references: [id],onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
