@@ -1,0 +1,15 @@
+model Brand {
+    id String @id @default(cuid())
+
+    title String
+    title_fa String
+    url String
+    description String
+
+    products Product[]
+
+    categories Category[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}

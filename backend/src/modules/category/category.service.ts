@@ -8,11 +8,9 @@ export class CategoryService {
   constructor(private databaseService: DatabaseService) {}
   async create(createCategoryDto: CreateCategoryDto) {
     if (createCategoryDto.parentId) {
-      const parent = await this.databaseService.category.findUnique({
-        where: { id: createCategoryDto.parentId },
-        include: { breadcrumb: true },
-      });
-      if (!parent) throw new BadRequestException('no parent found!');
+      const parent = await this.checkParentCategoryExists(
+        createCategoryDto.parentId,
+      );
 
       const filteredBreadcrumbParent = parent.breadcrumb.map((bread) => ({
         title: bread.title,
@@ -51,7 +49,7 @@ export class CategoryService {
           create: {
             title: createCategoryDto.title,
             title_fa: createCategoryDto.title_fa,
-            url: `/${createCategoryDto.title}`,
+            url: `/category/${createCategoryDto.title}`,
           },
         },
       },
@@ -76,7 +74,35 @@ export class CategoryService {
     return `This action updates a #${id} category`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: string) {
+    return await this.databaseService.category.delete({ where: { id } });
+  }
+
+  async removeAll() {
+    return await this.databaseService.category.deleteMany();
+  }
+
+  //utility functions
+  async checkParentCategoryExists(parentId: string) {
+    const parent = await this.databaseService.category.findUnique({
+      where: { id: parentId },
+      include: { breadcrumb: true },
+    });
+    if (!parent) throw new BadRequestException('no parent found!');
+    return parent;
+  }
+
+  async checkCategoryExists(categoryId: string) {
+    const category = await this.databaseService.category.findUnique({
+      where: { id: categoryId },
+      include: {
+        breadcrumb: true,
+        children: true,
+        parent: true,
+        products: true,
+      },
+    });
+    if (!category) throw new BadRequestException('no category found!');
+    return category;
   }
 }

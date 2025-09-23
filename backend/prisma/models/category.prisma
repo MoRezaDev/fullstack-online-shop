@@ -9,6 +9,7 @@ model Category {
     children Category[] @relation("ParentToChild")
 
 
+    brands Brand[]
     parents String[]
     products Product[]
     breadcrumb Breadcrumb[]
