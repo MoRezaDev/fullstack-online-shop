@@ -1,10 +1,11 @@
 model Brand {
     id String @id @default(cuid())
 
-    title String
+    title String @unique
     title_fa String
     url String
     description String
+    image_url String?
 
     products Product[]
 

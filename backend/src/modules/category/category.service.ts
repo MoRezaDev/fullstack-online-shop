@@ -66,12 +66,12 @@ export class CategoryService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findOne(id: string) {
+    return await this.databaseService.category.findUnique({where: {id}})
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
+    return await this.databaseService.category.update({where: {id},data: updateCategoryDto})
   }
 
   async remove(id: string) {

@@ -2,6 +2,7 @@ model Seller {
     id String @id @default(cuid())
 
     title String
+    title_fa String
     stars Float @default(0)
     url String
 

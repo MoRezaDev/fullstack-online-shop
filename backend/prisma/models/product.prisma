@@ -5,6 +5,7 @@ model Product {
     description String
     images String[]
     main_image String
+    category_brand_url String
 
     title String
     url String
