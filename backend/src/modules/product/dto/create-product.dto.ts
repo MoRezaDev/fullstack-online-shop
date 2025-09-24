@@ -1,34 +1,46 @@
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateProductDto {
-  
-    name : string
-    description : string
-    images? : string[]
-    main_image :  string
-    category_brand_url? : string
+  @ApiProperty({ example: 'Samsung A56', required: true })
+  name: string;
 
-    title : string
-    url : string
-    categoryId : string
+  @ApiProperty({ example: 'سامسونگ A56 گوشی بسیار عالی', required: true })
+  description: string;
 
-    brandId : string
+  @ApiProperty({
+    example:
+      'اگر لینک عکس دارید اینجا وارد کنید، در غیر این صورت این فیلد را پاک کنید',
+  })
+  images?: string[];
 
-    rate? : number
-   
-    
-    // seo Seo?
+  @ApiProperty({ example: 'آدرس عکس اصلی' })
+  main_image: string;
 
-    // colors Color[]
-    
-    // seller Seller[]
+  @ApiProperty({ example: 'Name of the product' })
+  category_brand_url?: string;
 
-    // main_specs SpecAttrib[]
-    // specifications Specification[]
+  @ApiProperty({ example: 'نام محصول به فارسی' })
+  title: string;
 
-    // commments_count Int @default(0)
-    // comments Comment[]
-    
+  @ApiProperty({ example: 'آیدی دسته مورد نظر', required: true })
+  categoryId: string;
 
-    // orderItems OrderItem[]
-  
+  @ApiProperty({ example: 'آیدی برند مورد نظر', required: true })
+  brandId: string;
+
+  rate?: number;
+
+  @ApiProperty({ example: 'آیدی های رنگ های مورد نظر', required: true })
+  colorsId: number[];
+
+  @ApiProperty({ example: 'آیدی فروشنده مورد نظر در صورت نیاز' })
+  sellerId?: string;
+
+  @ApiProperty({ example: [{ title: '', values: ['', ''] }] })
+  main_specs: object[];
+
+  @ApiProperty({
+    example: [{ title: '', attributes: [{ title: '', values: ['', ''] }] }],
+  })
+  specifications: object[];
 }

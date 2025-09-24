@@ -1,15 +1,11 @@
 model Seo {
-    id String @id @default(cuid())
-
-    description String
-    title String
-    canonical_url String
-
-    open_graph OpenGraph?
-
-    productId String? @unique
-    product Product? @relation(fields: [productId],references: [id],onDelete: Cascade)
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id            String     @id @default(cuid())
+  description   String
+  title         String
+  canonical_url String
+  productId     String?    @unique
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  open_graph    OpenGraph?
+  product       Product?   @relation(fields: [productId], references: [id], onDelete: Cascade)
 }

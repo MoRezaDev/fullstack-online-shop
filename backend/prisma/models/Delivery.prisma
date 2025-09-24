@@ -1,14 +1,10 @@
 model Delivery {
-    id String @id @default(cuid())
-
-    delivery_date String 
-    delivery_status String
-    is_delivered Boolean @default(false)
-
-    orderId String @unique
-    order Order @relation(fields: [orderId],references: [id],onDelete: Cascade)
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
+  id              String   @id @default(cuid())
+  delivery_date   String
+  delivery_status String
+  is_delivered    Boolean  @default(false)
+  orderId         String   @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }

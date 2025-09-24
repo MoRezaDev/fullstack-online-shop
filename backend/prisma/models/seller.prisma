@@ -1,46 +1,34 @@
 model Seller {
-    id String @id @default(cuid())
-
-    title String
-    title_fa String
-    stars Float @default(0)
-    url String
-
-    grade Grade?
-    properties SellerProperties?
-
-    products Product[]
-    purchased_items PurchasedItem[]
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
+  id              String            @id @default(cuid())
+  title           String            @unique
+  stars           Float             @default(0)
+  url             String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  title_fa        String
+  grade           Grade?
+  purchased_items PurchasedItem[]
+  properties      SellerProperties?
+  products        Product[]         @relation("ProductToSeller")
 }
 
 model Grade {
-    id String @id @default(cuid())
-
-    label String
-    color String
-
-    sellerId String @unique
-    seller Seller @relation(fields: [sellerId],references: [id],onDelete: Cascade)
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-     
+  id        String   @id @default(cuid())
+  label     String
+  color     String
+  sellerId  String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  seller    Seller   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
 }
 
 model SellerProperties {
-    id String @id @default(cuid())
-
-    is_trusted Boolean @default(false)
-    is_new Boolean @default(true)
-    is_official Boolean @default(false)
-
-    sellerId String @unique
-    seller Seller @relation(fields: [sellerId],references: [id],onDelete: Cascade)
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  is_trusted  Boolean  @default(false)
+  is_new      Boolean  @default(true)
+  is_official Boolean  @default(false)
+  sellerId    String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  seller      Seller   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
 }

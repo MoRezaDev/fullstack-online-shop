@@ -1,15 +1,12 @@
 model Payment {
-    id String @id @default(cuid())
-
-    amount Int
-    date String
-    is_user_paid Boolean @default(false)
-    status String @default("pending")
-    successful Boolean @default(false)
-
-    orderId String
-    order Order @relation(fields: [orderId],references: [id],onDelete: Cascade)
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id           String   @id @default(cuid())
+  amount       Int
+  date         String
+  is_user_paid Boolean  @default(false)
+  status       String   @default("pending")
+  successful   Boolean  @default(false)
+  orderId      String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }

@@ -1,31 +1,21 @@
 model Specification {
-    id String @id @default(cuid())
-
-    title String
-
-    attributes SpecAttrib[]
-
-    productId String
-    product Product @relation(fields: [productId],references: [id],onDelete: Cascade)
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
+  id         String       @id @default(cuid())
+  title      String
+  productId  String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  attributes SpecAttrib[]
+  product    Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model SpecAttrib {
-    id String @id @default(cuid())
-
-    title String
-    values String[]
-
-    specificationId String?
-    specification Specification? @relation(fields: [specificationId],references: [id],onDelete: Cascade)
-
-    productId String?
-    product Product? @relation(fields: [productId],references: [id],onDelete: Cascade)
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
+  id              String         @id @default(cuid())
+  title           String
+  values          String[]
+  specificationId String?
+  productId       String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  product         Product?       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  specification   Specification? @relation(fields: [specificationId], references: [id], onDelete: Cascade)
 }

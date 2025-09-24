@@ -1,55 +1,40 @@
 model Comment {
-    id String @id @default(cuid())
-    body String
-    advantages String[]
-    disadvantages String[]
-    created_at String
-    is_buyer Boolean @default(false)
-    rate Int?
-    is_approved Boolean @default(false)
-    comment_reaction CommentReaction?
-
-    purchased_item PurchasedItem?
-
-    userId String
-    user User @relation(fields: [userId],references: [id],onDelete: Cascade)
-
-    productId String
-    product Product @relation(fields: [productId],references: [id],onDelete: Cascade)
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
+  id               String           @id @default(cuid())
+  body             String
+  advantages       String[]
+  disadvantages    String[]
+  created_at       String
+  is_buyer         Boolean          @default(false)
+  rate             Int?
+  is_approved      Boolean          @default(false)
+  userId           String
+  productId        String
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  product          Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment_reaction CommentReaction?
+  purchased_item   PurchasedItem?
 }
 
 model PurchasedItem {
-    id String @id @default(cuid())
-
-   sellerId String?
-   seller Seller? @relation(fields: [sellerId],references: [id],onDelete: Cascade)
-   
-
-    colorId Int?
-    color Color? @relation(fields: [colorId],references: [id],onDelete: Cascade)
-
-    commentId String? @unique
-    comment Comment? @relation(fields: [commentId],references: [id],onDelete: Cascade)
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    
+  id        String   @id @default(cuid())
+  sellerId  String?
+  colorId   Int?
+  commentId String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  color     Color?   @relation(fields: [colorId], references: [id], onDelete: Cascade)
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  seller    Seller?  @relation(fields: [sellerId], references: [id], onDelete: Cascade)
 }
 
 model CommentReaction {
-    id String @id @default(cuid())
-
-    likes Int @default(0)
-    dislikes Int @default(0)
-
-
-    commentId String @unique
-    comment Comment @relation(fields: [commentId],references: [id],onDelete: Cascade)
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @default(cuid())
+  likes     Int      @default(0)
+  dislikes  Int      @default(0)
+  commentId String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
 }

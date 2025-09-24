@@ -1,16 +1,12 @@
 model Brand {
-    id String @id @default(cuid())
-
-    title String @unique
-    title_fa String
-    url String
-    description String
-    image_url String?
-
-    products Product[]
-
-    categories Category[]
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id          String     @id @default(cuid())
+  title       String     @unique
+  title_fa    String
+  url         String
+  description String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  image_url   String?
+  products    Product[]
+  categories  Category[] @relation("BrandToCategory")
 }

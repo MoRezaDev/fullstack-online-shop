@@ -1,19 +1,14 @@
 model Category {
-    id String @id @default(cuid())
-
-    title String
-    title_fa String
-
-    parentId String?
-    parent Category? @relation("ParentToChild",fields: [parentId],references: [id])
-    children Category[] @relation("ParentToChild")
-
-
-    brands Brand[]
-    parents String[]
-    products Product[]
-    breadcrumb Breadcrumb[]
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id         String       @id @default(cuid())
+  title      String
+  title_fa   String
+  parentId   String?
+  parents    String[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  breadcrumb Breadcrumb[]
+  parent     Category?    @relation("ParentToChild", fields: [parentId], references: [id])
+  children   Category[]   @relation("ParentToChild")
+  products   Product[]
+  brands     Brand[]      @relation("BrandToCategory")
 }

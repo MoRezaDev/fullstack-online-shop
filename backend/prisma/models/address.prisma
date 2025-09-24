@@ -1,21 +1,18 @@
 model Address {
-    id String @id @default(cuid())
-    city String
-    state String
-    address String
-    zip_code String?
-    mobile String
-    latitude String?
-    longitude String?
-    full_name String
-    map_images String[]
-
-    userId String @unique
-    user User @relation(fields: [userId],references: [id],onDelete: Cascade)
-
-    orderId String @unique
-    order Order @relation(fields: [orderId],references: [id],onDelete: Cascade)
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id         String   @id @default(cuid())
+  city       String
+  state      String
+  address    String
+  zip_code   String?
+  mobile     String
+  latitude   String?
+  longitude  String?
+  full_name  String
+  map_images String[]
+  userId     String   @unique
+  orderId    String   @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

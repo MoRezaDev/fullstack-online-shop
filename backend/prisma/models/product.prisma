@@ -1,53 +1,37 @@
 model Product {
-    id String @id @default(cuid())
-
-    name String @unique
-    description String
-    images String[]
-    main_image String
-    category_brand_url String
-
-    title String
-    url String
-    categoryId String
-    category Category @relation(fields: [categoryId],references: [id],onDelete: Cascade)
-
-    breadcrumb Breadcrumb[]
-
-    brandId String
-    brand Brand @relation(fields: [brandId],references: [id],onDelete: Cascade)
-
-    rate Float @default(0)
-    rating productRating?
-    
-    seo Seo?
-
-    colors Color[]
-    
-    seller Seller[]
-
-    main_specs SpecAttrib[]
-    specifications Specification[]
-
-    commments_count Int @default(0)
-    comments Comment[]
-    
-
-    orderItems OrderItem[]
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id                 String          @id @default(cuid())
+  name               String          @unique
+  description        String
+  images             String[]
+  main_image         String
+  title              String
+  url                String
+  categoryId         String
+  brandId            String
+  rate               Float           @default(0)
+  commments_count    Int             @default(0)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  category_brand_url String
+  breadcrumb         Breadcrumb[]
+  comments           Comment[]
+  orderItems         OrderItem[]
+  brand              Brand           @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  category           Category        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  seo                Seo?
+  main_specs         SpecAttrib[]
+  specifications     Specification[]
+  rating             productRating?
+  colors             Color[]         @relation("ColorToProduct")
+  seller             Seller[]        @relation("ProductToSeller")
 }
 
 model productRating {
-    id String @id @default(cuid())
-
-    rate Float @default(0)
-    count Int @default(0)
-
-    productId String @unique
-    product Product @relation(fields: [productId],references: [id],onDelete: Cascade)
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @default(cuid())
+  rate      Float    @default(0)
+  count     Int      @default(0)
+  productId String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }

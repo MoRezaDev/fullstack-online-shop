@@ -1,12 +1,10 @@
 model Color {
-    id Int @id @default(autoincrement())
-    title String
-    hex_code String
-
-    products Product[]
-
-    purchased_item PurchasedItem[]
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id             Int             @id @default(autoincrement())
+  title          String
+  title_fa       String
+  hex_code       String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  purchased_item PurchasedItem[]
+  products       Product[]       @relation("ColorToProduct")
 }

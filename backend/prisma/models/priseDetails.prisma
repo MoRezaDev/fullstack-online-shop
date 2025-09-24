@@ -1,15 +1,12 @@
 model PriceDetails {
-    id String @id @default(cuid())
-
-    total_amount Int
-    discount Int @default(0)
-    ship_cost Int @default(0)
-    final_amount Int
-    user_paid Int @default(0)
-
-    orderId String @unique
-    order Order @relation(fields: [orderId],references: [id],onDelete: Cascade)
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id           String   @id @default(cuid())
+  total_amount Int
+  discount     Int      @default(0)
+  ship_cost    Int      @default(0)
+  final_amount Int
+  user_paid    Int      @default(0)
+  orderId      String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
