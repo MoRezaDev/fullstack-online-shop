@@ -89,6 +89,7 @@ CREATE TABLE "public"."Category" (
 CREATE TABLE "public"."Color" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
+    "title_fa" TEXT NOT NULL,
     "hex_code" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -239,6 +240,7 @@ CREATE TABLE "public"."PriceDetails" (
 CREATE TABLE "public"."Product" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "product_number" INTEGER NOT NULL,
     "description" TEXT NOT NULL,
     "images" TEXT[],
     "main_image" TEXT NOT NULL,
@@ -417,7 +419,13 @@ CREATE UNIQUE INDEX "PriceDetails_orderId_key" ON "public"."PriceDetails"("order
 CREATE UNIQUE INDEX "Product_name_key" ON "public"."Product"("name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Product_product_number_key" ON "public"."Product"("product_number");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "productRating_productId_key" ON "public"."productRating"("productId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Seller_title_key" ON "public"."Seller"("title");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Grade_sellerId_key" ON "public"."Grade"("sellerId");

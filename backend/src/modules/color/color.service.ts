@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateColorDto } from './dto/create-color.dto';
+import { CreateColorDto, CreateMultiColorDto } from './dto/create-color.dto';
 import { UpdateColorDto } from './dto/update-color.dto';
 import { DatabaseService } from '../../database/database.service';
 
@@ -8,6 +8,12 @@ export class ColorService {
   constructor(private databaseService: DatabaseService) {}
   async create(createColorDto: CreateColorDto) {
     return await this.databaseService.color.create({ data: createColorDto });
+  }
+
+  async createColors(CreateMultiColorDto: CreateMultiColorDto) {
+    return await this.databaseService.color.createMany({
+      data: CreateMultiColorDto.colors,
+    });
   }
 
   async findAll() {

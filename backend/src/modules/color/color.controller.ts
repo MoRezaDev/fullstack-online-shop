@@ -8,7 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ColorService } from './color.service';
-import { CreateColorDto } from './dto/create-color.dto';
+import { CreateColorDto, CreateMultiColorDto } from './dto/create-color.dto';
 import { UpdateColorDto } from './dto/update-color.dto';
 import { ApiOperation } from '@nestjs/swagger';
 
@@ -18,14 +18,20 @@ export class ColorController {
 
   @Post()
   @ApiOperation({ summary: 'Create color' })
-  create(@Body() createColorDto: CreateColorDto) {
+  async create(@Body() createColorDto: CreateColorDto) {
     return this.colorService.create(createColorDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all colors' })
-  findAll() {
+  async findAll() {
     return this.colorService.findAll();
+  }
+
+  @Post('create-multi')
+  @ApiOperation({ summary: 'Create multiple colors' })
+  async createColors(@Body() CreateMultiColorDto: CreateMultiColorDto) {
+    return this.colorService.createColors(CreateMultiColorDto);
   }
 
   @Delete('remove-all')
@@ -35,19 +41,19 @@ export class ColorController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get specific color' })
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.colorService.findOne(+id);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'update specific color' })
-  update(@Param('id') id: string, @Body() updateColorDto: UpdateColorDto) {
+  async update(@Param('id') id: string, @Body() updateColorDto: UpdateColorDto) {
     return this.colorService.update(+id, updateColorDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete specific color' })
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.colorService.remove(+id);
   }
 }

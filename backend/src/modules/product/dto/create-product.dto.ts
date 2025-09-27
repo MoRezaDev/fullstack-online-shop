@@ -33,14 +33,16 @@ export class CreateProductDto {
   @ApiProperty({ example: 'آیدی های رنگ های مورد نظر', required: true })
   colorsId: number[];
 
-  @ApiProperty({ example: 'آیدی فروشنده مورد نظر در صورت نیاز' })
-  sellerId?: string;
+  @ApiProperty({ example: 'آیدی فروشنده مورد نظر' })
+  sellerId: string;
 
-  @ApiProperty({ example: [{ title: '', values: ['', ''] }] })
-  main_specs: object[];
+  @ApiProperty({ example: { title: '', values: ['', ''] } })
+  main_spec: { title: string; values: string[] };
 
   @ApiProperty({
     example: [{ title: '', attributes: [{ title: '', values: ['', ''] }] }],
   })
-  specifications: object[];
+  specifications: [
+    { title: ''; attributes: [{ title: ''; values: ['', ''] }] },
+  ];
 }

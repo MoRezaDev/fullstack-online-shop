@@ -11,6 +11,7 @@ import { SellerService } from './seller.service';
 import { CreateSellerDto } from './dto/create-seller.dto';
 import { UpdateSellerDto } from './dto/update-seller.dto';
 import { ApiOperation } from '@nestjs/swagger';
+import { AddProductToSellerDto } from './dto/add-products.dto';
 
 @Controller('seller')
 export class SellerController {
@@ -27,6 +28,15 @@ export class SellerController {
   findAll() {
     return this.sellerService.findAll();
   }
+
+  @Post('add-product')
+  @ApiOperation({ summary: 'Add products to seller' })
+  async addProductsToSeller(
+    @Body() addProdcutToSellerDto: AddProductToSellerDto,
+  ) {
+    return this.sellerService.addProductsToSeller(addProdcutToSellerDto);
+  }
+
   @Delete('remove-all')
   @ApiOperation({ summary: 'remove all Sellers' })
   async removeAll() {

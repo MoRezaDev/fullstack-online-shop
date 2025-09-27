@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateSellerDto } from './dto/create-seller.dto';
 import { UpdateSellerDto } from './dto/update-seller.dto';
 import { DatabaseService } from '../../database/database.service';
+import { AddProductToSellerDto } from './dto/add-products.dto';
 
 @Injectable()
 export class SellerService {
@@ -40,14 +41,38 @@ export class SellerService {
   }
 
   async update(id: string, updateSellerDto: UpdateSellerDto) {
-    return await this.databaseService.seller.update({where : {id},data: updateSellerDto})
+    return await this.databaseService.seller.update({
+      where: { id },
+      data: updateSellerDto,
+    });
   }
 
   async remove(id: string) {
-    return await this.databaseService.seller.delete({where: {id}})
+    return await this.databaseService.seller.delete({ where: { id } });
   }
 
   async removeAll() {
     return await this.databaseService.seller.deleteMany();
   }
+
+  async addProductsToSeller(addProductToSellerDto : AddProductToSellerDto) {
+    return await this.databaseService.seller.update({
+      where: {id: addProductToSellerDto.sellerId},
+      data: {
+        products: {
+          connect: addProductToSellerDto.productsId.map(id => ({id}))
+        }
+      }
+    })
+  }
+
+  async checkSellerExists(sellerId: string) {
+    const category = await this.databaseService.seller.findUnique({
+      where: { id: sellerId },
+      include: {},
+    });
+    if (!category) throw new BadRequestException('no brands found!');
+    return category;
+  }
+  
 }

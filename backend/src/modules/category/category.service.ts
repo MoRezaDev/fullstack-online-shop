@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { DatabaseService } from '../../database/database.service';
+import slugify from 'slugify';
 
 @Injectable()
 export class CategoryService {
@@ -15,10 +16,10 @@ export class CategoryService {
       const filteredBreadcrumbParent = parent.breadcrumb.map((bread) => ({
         title: bread.title,
         title_fa: bread.title_fa,
-        url: bread.url,
+        url: bread.url.toLocaleLowerCase(),
       }));
 
-      const url = `${parent.breadcrumb[parent.breadcrumb.length - 1].url}/${createCategoryDto.title}`;
+      const url = `${parent.breadcrumb[parent.breadcrumb.length - 1].url}/${slugify(createCategoryDto.title.toLocaleLowerCase())}`;
 
       const breadcrumbArray = [
         ...filteredBreadcrumbParent,
@@ -49,7 +50,7 @@ export class CategoryService {
           create: {
             title: createCategoryDto.title,
             title_fa: createCategoryDto.title_fa,
-            url: `/category/${createCategoryDto.title}`,
+            url: `/category/${createCategoryDto.title.toLocaleLowerCase()}`,
           },
         },
       },
@@ -67,11 +68,14 @@ export class CategoryService {
   }
 
   async findOne(id: string) {
-    return await this.databaseService.category.findUnique({where: {id}})
+    return await this.databaseService.category.findUnique({ where: { id } });
   }
 
   async update(id: string, updateCategoryDto: UpdateCategoryDto) {
-    return await this.databaseService.category.update({where: {id},data: updateCategoryDto})
+    return await this.databaseService.category.update({
+      where: { id },
+      data: updateCategoryDto,
+    });
   }
 
   async remove(id: string) {

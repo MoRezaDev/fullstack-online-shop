@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { DatabaseService } from '../../database/database.service';
 import { CategoryService } from '../category/category.service';
+import slugify from 'slugify';
 
 @Injectable()
 export class BrandService {
@@ -20,7 +21,7 @@ export class BrandService {
           title: createBrandDto.title,
           title_fa: createBrandDto.title_fa,
           description: createBrandDto.description,
-          url: `/brand/${createBrandDto.title}`,
+          url: `/brand/${slugify(createBrandDto.title.toLocaleLowerCase())}`,
           categories: {
             connect: {
               id: category.id,
@@ -34,7 +35,7 @@ export class BrandService {
         title: createBrandDto.title,
         title_fa: createBrandDto.title_fa,
         description: createBrandDto.description,
-        url: `/brand/${createBrandDto.title}`,
+        url: `/brand/${slugify(createBrandDto.title.toLocaleLowerCase())}`,
       },
     });
   }
@@ -46,18 +47,30 @@ export class BrandService {
   }
 
   async findOne(id: string) {
-    return await this.databaseService.brand.findUnique({where: {id}})
+    return await this.databaseService.brand.findUnique({ where: { id } });
   }
 
   async update(id: string, updateBrandDto: UpdateBrandDto) {
-    return await this.databaseService.brand.update({where: {id},data: updateBrandDto})
+    return await this.databaseService.brand.update({
+      where: { id },
+      data: updateBrandDto,
+    });
   }
 
   async remove(id: string) {
-    return await this.databaseService.brand.delete({where: {id}})
+    return await this.databaseService.brand.delete({ where: { id } });
   }
 
   async removeAll() {
     return await this.databaseService.brand.deleteMany();
+  }
+
+  async checkBrandExists(brandId: string) {
+    const category = await this.databaseService.brand.findUnique({
+      where: { id: brandId },
+      include: {},
+    });
+    if (!category) throw new BadRequestException('no brands found!');
+    return category;
   }
 }
