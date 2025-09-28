@@ -9,10 +9,9 @@ model Address {
   longitude  String?
   full_name  String
   map_images String[]
+  order Order[]
   userId     String   @unique
-  orderId    String   @unique
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
