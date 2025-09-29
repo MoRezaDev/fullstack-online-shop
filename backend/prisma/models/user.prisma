@@ -12,4 +12,5 @@ model User {
   comments  Comment[]
   orders    Order[]
   plus      Plus?
+  otp       Otp?
 }

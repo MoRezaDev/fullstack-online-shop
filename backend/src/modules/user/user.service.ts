@@ -1,26 +1,46 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { DatabaseService } from '../../database/database.service';
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(private databaseService: DatabaseService) {}
+  async create(createUserDto: CreateUserDto) {
+    return await this.databaseService.user.create({ data: createUserDto });
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAll() {
+    return await this.databaseService.user.findMany({
+      include: { address: true, plus: true },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    return await this.databaseService.user.findUnique({ where: { id } });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    return await this.databaseService.user.update({
+      where: { id },
+      data: updateUserDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    return await this.databaseService.user.delete({ where: { id } });
+  }
+
+  async checkUserExists(id: string) {
+    const user = await this.databaseService.user.findUnique({ where: { id } });
+
+    if (!user) throw new NotFoundException('یوزر پیدا نشد');
+    return user;
+  }
+  async checkUserExistsByMobile(mobile: string) {
+    const user = await this.databaseService.user.findUnique({ where: { mobile },include: {otp: true} });
+
+    if (!user) throw new NotFoundException('یوزر پیدا نشد');
+    return user;
   }
 }

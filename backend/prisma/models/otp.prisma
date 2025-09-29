@@ -1,0 +1,9 @@
+model Otp {
+    id String @id @default(cuid())
+
+    code Int 
+    expires_at DateTime 
+
+    userId String @unique
+    user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+}
