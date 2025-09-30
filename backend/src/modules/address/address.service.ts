@@ -2,27 +2,41 @@ import { Injectable } from '@nestjs/common';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
 import { DatabaseService } from '../../database/database.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AddressService {
-  constructor (private databaseService: DatabaseService) {}
+  constructor(
+    private databaseService: DatabaseService,
+    private userService: UserService,
+  ) {}
   async create(createAddressDto: CreateAddressDto) {
-    return ''
+    const user = await this.userService.checkUserExists(
+      createAddressDto.userId,
+    );
+
+    return await this.databaseService.address.create({
+      data: {
+        ...createAddressDto,
+        mobile: user.mobile,
+        full_name: user.full_name ?? '',
+      },
+    });
   }
 
   async findAll() {
-    return `This action returns all address`;
+    return this.databaseService.address.findMany()
   }
 
-  async findOne(id: number) {
-    return `This action returns a #${id} address`;
+  async findOne(id: string) {
+    return this.databaseService.address.findUnique({where: {id}})
   }
 
-  async update(id: number, updateAddressDto: UpdateAddressDto) {
-    return `This action updates a #${id} address`;
+  async update(id: string, updateAddressDto: UpdateAddressDto) {
+    return await this.databaseService.address.update({where: {id},data: updateAddressDto})
   }
 
-  async remove(id: number) {
-    return `This action removes a #${id} address`;
+  async remove(id: string) {
+    return await this.databaseService.address.delete({where: {id}})
   }
 }
