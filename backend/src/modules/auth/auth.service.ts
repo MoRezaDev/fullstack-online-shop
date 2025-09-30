@@ -59,10 +59,20 @@ export class AuthService {
     }
 
     return await this.jwtService.signAsync(
-      { user_id: user.id, exp: Date.now() + 60 * 1000 },
+      { user_id: user.id },
       {
-        expiresIn: '1m',
+        expiresIn: '10m',
       },
     );
+  }
+
+  async getUserSession(userId: string) {
+    const user = await this.userService.checkUserExists(userId);
+
+    return {
+      mobile: user.mobile,
+      email: user.email,
+      full_name: user.full_name,
+    };
   }
 }
