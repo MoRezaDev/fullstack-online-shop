@@ -16,6 +16,7 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { CartModule } from './modules/cart/cart.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
         },
       ],
     }),
+    CartModule,
   ],
   controllers: [AppController],
   providers: [

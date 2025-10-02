@@ -1,11 +1,18 @@
 model Price {
   id               String   @id @default(cuid())
   discount_percent Int?
+  item_discount    Int  @default(0)
   sold_percent     Int?
+  quantity         Int @default(0)
   actual_price     Int
   selling_price    Int
   is_incredible    Boolean  @default(false)
   order_limit      Int?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+
+  cart_item CartItem?
+
+  productId String @unique
+  product Product @relation(fields: [productId],references: [id],onDelete: Cascade)
 }

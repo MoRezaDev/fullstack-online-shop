@@ -25,6 +25,10 @@ model Product {
   rating             productRating?
   colors             Color[]         @relation("ColorToProduct")
   seller             Seller[]        @relation("ProductToSeller")
+
+  price Price?
+
+  cart_items CartItem[]
 }
 
 model productRating {
