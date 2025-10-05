@@ -4,3 +4,4 @@ backend/dist
 backend/.env
 backend/src/generated
 backend/generated
+backend/prisma/models-old

@@ -32,7 +32,7 @@ export class UserService {
   }
 
   async checkUserExists(id: string) {
-    const user = await this.databaseService.user.findUnique({ where: { id } });
+    const user = await this.databaseService.user.findUnique({ where: { id },include: {address:true,cart: true,plus:true,orders: true} });
 
     if (!user) throw new NotFoundException('یوزر پیدا نشد');
     return user;
