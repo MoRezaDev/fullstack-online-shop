@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { CategoryModule } from './modules/category/category.module';
 import { BrandModule } from './modules/brand/brand.module';
+import { ProductModule } from './modules/product/product.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { BrandModule } from './modules/brand/brand.module';
     }),
     CategoryModule,
     BrandModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [

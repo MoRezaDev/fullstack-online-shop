@@ -5,8 +5,13 @@ model Product {
     title_fa String
     description String
     url String
+    main_image_url String?
+    images_url String[]
 
     warehouse Warehouse?
+
+    specifications Specification[]
+    main_specification MainSpecification?
 
     brandId String
     brand Brand @relation(fields: [brandId],references: [id],onDelete: Cascade)
@@ -14,6 +19,9 @@ model Product {
 
 
     cart_items CartItem[]
+
+    seoId String? @unique
+    seo Seo? @relation(fields: [seoId],references: [id],onDelete: Cascade)
 
 
     createdAt DateTime @default(now())
