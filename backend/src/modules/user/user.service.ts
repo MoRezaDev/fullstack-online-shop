@@ -12,7 +12,7 @@ export class UserService {
 
   async findAll() {
     return await this.databaseService.user.findMany({
-      include: { address: true, plus: true },
+      include: { address: true },
     });
   }
 
@@ -32,13 +32,19 @@ export class UserService {
   }
 
   async checkUserExists(id: string) {
-    const user = await this.databaseService.user.findUnique({ where: { id },include: {address:true,cart: true,plus:true,orders: true} });
+    const user = await this.databaseService.user.findUnique({
+      where: { id },
+      include: { address: true, cart: true },
+    });
 
     if (!user) throw new NotFoundException('یوزر پیدا نشد');
     return user;
   }
   async checkUserExistsByMobile(mobile: string) {
-    const user = await this.databaseService.user.findUnique({ where: { mobile },include: {otp: true} });
+    const user = await this.databaseService.user.findUnique({
+      where: { mobile },
+      include: { otp: true },
+    });
 
     if (!user) throw new NotFoundException('یوزر پیدا نشد');
     return user;

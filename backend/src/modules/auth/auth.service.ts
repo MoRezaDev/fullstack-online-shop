@@ -31,12 +31,7 @@ export class AuthService {
           mobile: sendOtpDto.mobile,
           otp: { create: otp },
           cart: {
-            create: {
-              item_price: 0,
-              items_count: 0,
-              payable_price: 0,
-              total_discounts: 0,
-            },
+            create: {},
           },
         },
         select: {
@@ -84,6 +79,7 @@ export class AuthService {
       mobile: user.mobile,
       email: user.email,
       full_name: user.full_name,
+      address: user.address,
     };
   }
 }

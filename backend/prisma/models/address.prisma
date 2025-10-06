@@ -1,0 +1,18 @@
+model Address {
+    id String @id @default(cuid())
+
+    state String
+    city String
+    address String
+
+    latitude String?
+    longitude String?
+    map_url String?
+
+    userId String
+    user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+}

@@ -1,0 +1,21 @@
+model Product {
+    id String @id @default(cuid())
+
+    title String
+    title_fa String
+    description String
+    url String
+
+    warehouse Warehouse?
+
+    brandId String
+    brand Brand @relation(fields: [brandId],references: [id],onDelete: Cascade)
+    brand_category_url String
+
+
+    cart_items CartItem[]
+
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
