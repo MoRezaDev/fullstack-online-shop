@@ -17,7 +17,7 @@ export class AuthService {
   async sendOtp(sendOtpDto: SendOtpDto) {
     const user = await this.databaseService.user.findUnique({
       where: { mobile: sendOtpDto.mobile },
-      include: { otp: true },
+      include: { otp: true, cart: true },
     });
 
     const otp = {
@@ -27,7 +27,13 @@ export class AuthService {
 
     if (!user) {
       return await this.databaseService.user.create({
-        data: { mobile: sendOtpDto.mobile, otp: { create: otp } },
+        data: {
+          mobile: sendOtpDto.mobile,
+          otp: { create: otp },
+          cart: {
+            create: {},
+          },
+        },
         select: {
           otp: true,
         },
@@ -59,10 +65,21 @@ export class AuthService {
     }
 
     return await this.jwtService.signAsync(
-      { user_id: user.id, exp: Date.now() + 60 * 1000 },
+      { user_id: user.id },
       {
-        expiresIn: '1m',
+        expiresIn: '10m',
       },
     );
+  }
+
+  async getUserSession(userId: string) {
+    const user = await this.userService.checkUserExists(userId);
+
+    return {
+      mobile: user.mobile,
+      email: user.email,
+      full_name: user.full_name,
+      address: user.address,
+    };
   }
 }

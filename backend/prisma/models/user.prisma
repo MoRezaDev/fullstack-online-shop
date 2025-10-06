@@ -1,16 +1,16 @@
 model User {
-  id        String    @id @default(cuid())
-  mobile    String    @unique
-  full_name String?
-  email     String?
-  password  String?
-  role      String    @default("user")
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  address   Address[]
-  cart      Cart?
-  comments  Comment[]
-  orders    Order[]
-  plus      Plus?
-  otp       Otp?
+    id String @id @default(cuid())
+
+    mobile String @unique
+    full_name String?
+    email String?
+    password String?
+    role String @default("user")
+    
+    address Address[]
+    cart Cart?
+    otp Otp?
+    // comments Comment[]
+    // orders Order[]
+
 }

@@ -1,112 +1,105 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
 import { DatabaseService } from '../../database/database.service';
-import slugify from 'slugify';
+import { categoryExceptions } from '../../common/messages/exceptions.message';
+import { persianSlugify } from '../../common/helper/functions';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoryService {
   constructor(private databaseService: DatabaseService) {}
-  async create(createCategoryDto: CreateCategoryDto) {
+  async createCategory(createCategoryDto: CreateCategoryDto) {
     if (createCategoryDto.parentId) {
-      const parent = await this.checkParentCategoryExists(
-        createCategoryDto.parentId,
-      );
-
-      const filteredBreadcrumbParent = parent.breadcrumb.map((bread) => ({
-        title: bread.title,
-        title_fa: bread.title_fa,
-        url: bread.url.toLocaleLowerCase(),
-      }));
-
-      const url = `${parent.breadcrumb[parent.breadcrumb.length - 1].url}/${slugify(createCategoryDto.title.toLocaleLowerCase())}`;
-
-      const breadcrumbArray = [
-        ...filteredBreadcrumbParent,
-        {
-          title: createCategoryDto.title,
-          title_fa: createCategoryDto.title_fa,
-          url,
-        },
-      ];
-
-      return await this.databaseService.category.create({
-        data: {
-          title: createCategoryDto.title,
-          title_fa: createCategoryDto.title_fa,
-          parentId: parent.id,
-          breadcrumb: {
-            create: breadcrumbArray,
-          },
-        },
-      });
+      return await this.createCategoryWithParentId(createCategoryDto);
     }
 
-    return await this.databaseService.category.create({
-      data: {
-        title: createCategoryDto.title,
-        title_fa: createCategoryDto.title_fa,
-        breadcrumb: {
-          create: {
-            title: createCategoryDto.title,
-            title_fa: createCategoryDto.title_fa,
-            url: `/category/${createCategoryDto.title.toLocaleLowerCase()}`,
-          },
-        },
-      },
-    });
-  }
-
-  async findAll() {
-    return await this.databaseService.category.findMany({
-      include: {
-        breadcrumb: true,
-        children: true,
-        parent: true,
-      },
-    });
-  }
-
-  async findOne(id: string) {
-    return await this.databaseService.category.findUnique({ where: { id } });
-  }
-
-  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
-    return await this.databaseService.category.update({
-      where: { id },
-      data: updateCategoryDto,
-    });
-  }
-
-  async remove(id: string) {
-    return await this.databaseService.category.delete({ where: { id } });
-  }
-
-  async removeAll() {
-    return await this.databaseService.category.deleteMany();
-  }
-
-  //utility functions
-  async checkParentCategoryExists(parentId: string) {
-    const parent = await this.databaseService.category.findUnique({
-      where: { id: parentId },
-      include: { breadcrumb: true },
-    });
-    if (!parent) throw new BadRequestException('no parent found!');
-    return parent;
+    return await this.createRootCategory(createCategoryDto);
   }
 
   async checkCategoryExists(categoryId: string) {
     const category = await this.databaseService.category.findUnique({
       where: { id: categoryId },
       include: {
-        breadcrumb: true,
-        children: true,
-        parent: true,
-        products: true,
+        breadcrumb: { select: { title: true, title_fa: true, url: true } },
       },
     });
-    if (!category) throw new BadRequestException('no category found!');
+    if (!category) throw new BadRequestException(categoryExceptions.notFound);
     return category;
+  }
+
+  async createRootCategory(createCategoryDto: CreateCategoryDto) {
+    return await this.databaseService.category.create({
+      data: {
+        ...createCategoryDto,
+        breadcrumb: {
+          create: [
+            {
+              title: 'onlineshop',
+              title_fa: 'فروشگاه آنلاین',
+              url: '/',
+            },
+            {
+              title: createCategoryDto.title,
+              title_fa: createCategoryDto.title_fa,
+              url: `/category/${persianSlugify(createCategoryDto.title)}`,
+            },
+          ],
+        },
+      },
+      include: { breadcrumb: true },
+    });
+  }
+
+  async createCategoryWithParentId(createCategoryDto: CreateCategoryDto) {
+    if (!createCategoryDto.parentId)
+      throw new BadRequestException(categoryExceptions.idFormat);
+    const parent = await this.checkCategoryExists(createCategoryDto.parentId);
+    const parentLastBreadcrumbUrl =
+      parent.breadcrumb[parent.breadcrumb.length - 1].url;
+
+    const breadcrumb = [
+      ...parent.breadcrumb,
+      {
+        title: createCategoryDto.title,
+        title_fa: createCategoryDto.title_fa,
+        url: `${parentLastBreadcrumbUrl}/${persianSlugify(createCategoryDto.title)}`,
+      },
+    ];
+    return await this.databaseService.category.create({
+      data: {
+        parentId: parent.id,
+        title: createCategoryDto.title,
+        title_fa: createCategoryDto.title_fa,
+        breadcrumb: { create: breadcrumb },
+      },
+      include: { breadcrumb: true },
+    });
+  }
+
+  async findAll() {
+    return await this.databaseService.category.findMany({
+      include: { brands: true, breadcrumb: true, children: true, parent: true },
+    });
+  }
+
+  async findOne(categoryId: string) {
+    return await this.checkCategoryExists(categoryId);
+  }
+
+  async update(categoryId: string, updateCategoryDto: UpdateCategoryDto) {
+    return await this.databaseService.category.update({
+      where: { id: categoryId },
+      data: updateCategoryDto,
+    });
+  }
+
+  async remove(categoryId: string) {
+    return await this.databaseService.category.delete({
+      where: { id: categoryId },
+    });
+  }
+
+  async removeAll() {
+    return this.databaseService.category.deleteMany();
   }
 }
