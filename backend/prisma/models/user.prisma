@@ -6,11 +6,13 @@ model User {
     email String?
     password String?
     role String @default("user")
+    is_user_active Boolean @default(true)
     
     address Address[]
     cart Cart?
     otp Otp?
-    // comments Comment[]
+    rating ProductRating[]
+    comments Comment[]
     // orders Order[]
 
 }

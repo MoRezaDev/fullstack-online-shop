@@ -1,18 +1,13 @@
-model Brand {
+model Seller {
     id String @id @default(cuid())
 
     title String
     title_fa String
     url String
 
-    categories Category[]
-
     products Product[]
 
-    sellers Seller[]
-
-    seoId String? @unique
-    seo Seo? @relation(fields: [seoId],references: [id],onDelete: Cascade)
+    brands Brand[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

@@ -1,0 +1,6 @@
+model Order {
+    id String @id @default(cuid())
+
+
+    buyer_detail BuyerDetail?
+}

@@ -7,8 +7,11 @@ model Product {
     url String
     main_image_url String?
     images_url String[]
+    product_code Int @unique
 
     warehouse Warehouse?
+
+    badges String[]
 
     specifications Specification[]
     main_specification MainSpecification?
@@ -17,8 +20,18 @@ model Product {
     brand Brand @relation(fields: [brandId],references: [id],onDelete: Cascade)
     brand_category_url String
 
+    product_rating ProductRating[]
+    avg_rating Float @default(0)
+    rating_count Int @default(0)
+
 
     cart_items CartItem[]
+
+    comments Comment[]
+
+    sellers Seller[]
+
+    colors Color[]
 
     seoId String? @unique
     seo Seo? @relation(fields: [seoId],references: [id],onDelete: Cascade)
