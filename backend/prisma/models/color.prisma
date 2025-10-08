@@ -3,6 +3,7 @@ model Color {
 
     hex_code String
     name String
+    name_fa String
 
     products Product[]
 }

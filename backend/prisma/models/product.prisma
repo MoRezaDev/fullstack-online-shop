@@ -20,6 +20,9 @@ model Product {
     brand Brand @relation(fields: [brandId],references: [id],onDelete: Cascade)
     brand_category_url String
 
+    categoryId String
+    category Category @relation(fields: [categoryId],references: [id],onDelete: Cascade)
+
     product_rating ProductRating[]
     avg_rating Float @default(0)
     rating_count Int @default(0)
@@ -33,8 +36,7 @@ model Product {
 
     colors Color[]
 
-    seoId String? @unique
-    seo Seo? @relation(fields: [seoId],references: [id],onDelete: Cascade)
+    seo Seo?
 
 
     createdAt DateTime @default(now())

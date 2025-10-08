@@ -12,7 +12,7 @@ export class UserService {
 
   async findAll() {
     return await this.databaseService.user.findMany({
-      include: { address: true },
+      include: { address: true,cart: {include: {cart_items: true}} },
     });
   }
 

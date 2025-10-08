@@ -11,8 +11,7 @@ model Brand {
 
     sellers Seller[]
 
-    seoId String? @unique
-    seo Seo? @relation(fields: [seoId],references: [id],onDelete: Cascade)
+    seo Seo?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

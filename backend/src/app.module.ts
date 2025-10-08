@@ -10,6 +10,9 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { CategoryModule } from './modules/category/category.module';
 import { BrandModule } from './modules/brand/brand.module';
 import { ProductModule } from './modules/product/product.module';
+import { SellerModule } from './modules/seller/seller.module';
+import { ColorModule } from './modules/color/color.module';
+import { CartModule } from './modules/cart/cart.module';
 
 @Module({
   imports: [
@@ -28,6 +31,9 @@ import { ProductModule } from './modules/product/product.module';
     CategoryModule,
     BrandModule,
     ProductModule,
+    SellerModule,
+    ColorModule,
+    CartModule,
   ],
   controllers: [AppController],
   providers: [
