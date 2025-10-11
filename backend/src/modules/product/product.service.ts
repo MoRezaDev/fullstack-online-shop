@@ -100,7 +100,7 @@ export class ProductService {
 
   async checkProductExists(productId: string) {
     const product = await this.databaseService.product.findUnique({
-      where: { id: productId },
+      where: { id: productId }, include: {warehouse: true}
     });
     if (!product) throw new BadRequestException('آیدی محصول پیدا نشد');
     return product;
