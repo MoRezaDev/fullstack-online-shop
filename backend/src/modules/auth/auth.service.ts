@@ -67,7 +67,7 @@ export class AuthService {
     return await this.jwtService.signAsync(
       { user_id: user.id },
       {
-        expiresIn: '10m',
+        expiresIn: '30m',
       },
     );
   }
@@ -80,6 +80,7 @@ export class AuthService {
       email: user.email,
       full_name: user.full_name,
       address: user.address,
+      cart: user.cart,
     };
   }
 }

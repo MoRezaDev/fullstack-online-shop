@@ -30,6 +30,8 @@ model Product {
 
     cart_items CartItem[]
 
+    guest_cart_items GuestCartItem[]
+
     comments Comment[]
 
     sellers Seller[]

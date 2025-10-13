@@ -3,10 +3,11 @@ import { CartService } from './cart.service';
 import { CartController } from './cart.controller';
 import { DatabaseModule } from '../../database/database.module';
 import { ProductModule } from '../product/product.module';
+import { GuestCartService } from './guest-cart.service';
 
 @Module({
   controllers: [CartController],
-  providers: [CartService],
+  providers: [CartService,GuestCartService],
   imports: [DatabaseModule,ProductModule],
 })
 export class CartModule {}

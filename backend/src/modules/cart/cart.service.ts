@@ -8,12 +8,15 @@ import { AddToCartDto } from './dto/add-to-cart.dto';
 import { ProductService } from '../product/product.service';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { RemoveCartItemDto } from './dto/remove-cartItem.dto';
+import { ClearCartDto } from './dto/clear-cart.dto';
+import { GuestCartService } from './guest-cart.service';
 
 @Injectable()
 export class CartService {
   constructor(
     private databaseService: DatabaseService,
     private productService: ProductService,
+    private guestCartService: GuestCartService,
   ) {}
 
   async addToCartHandler(addToCartDto: AddToCartDto, userId?: string) {
@@ -21,10 +24,12 @@ export class CartService {
     await this.productService.checkProductExists(addToCartDto.productId);
 
     if (!userId) {
-      return this.addToGuestCart(addToCartDto);
+      const result = await this.guestCartService.addToGuestCart(addToCartDto);
+      return { result, guest_cart_id: result.id };
     }
 
-    return this.addToCartForUser(addToCartDto, userId);
+    const result = await this.addToCartForUser(addToCartDto, userId);
+    return { result, guest_cart_id: null };
   }
 
   async addToCartForUser(addToCartDto: AddToCartDto, userId: string) {
@@ -58,7 +63,7 @@ export class CartService {
         const totalDiscount = unitDiscount * newQuantity;
         const totalSellingPrice = totalItemPrice - totalDiscount;
 
-        return await tx.cart.update({
+        const updatedCart = await tx.cart.update({
           where: { id: cart.id },
           data: {
             cart_items: {
@@ -67,11 +72,24 @@ export class CartService {
                 data: {
                   quantity: { increment: 1 },
                   item_price: unitPrice,
-                  item_discount: unitDiscount,
+                  item_discount: totalDiscount,
                   selling_price: totalSellingPrice,
                 },
               },
             },
+          },
+          include: { cart_items: true },
+        });
+
+        const { cartDiscounts, cartSellingPrice, cartTotalPrice } =
+          this.calculateCartTotals(updatedCart.cart_items);
+        return await tx.cart.update({
+          where: { id: updatedCart.id },
+          data: {
+            items_count: { increment: 1 },
+            selling_price: cartSellingPrice,
+            total_discounts: cartDiscounts,
+            total_price: cartTotalPrice,
           },
           include: { cart_items: true },
         });
@@ -81,7 +99,7 @@ export class CartService {
         const unitDiscount = warehouse.item_discount ?? 0;
         const sellingPrice = unitPrice - unitDiscount;
 
-        return await tx.cart.update({
+        const updatedCart = await tx.cart.update({
           where: { id: cart.id },
           data: {
             cart_items: {
@@ -96,6 +114,20 @@ export class CartService {
           },
           include: { cart_items: true },
         });
+
+        const { cartDiscounts, cartSellingPrice, cartTotalPrice } =
+          this.calculateCartTotals(updatedCart.cart_items);
+
+        return await tx.cart.update({
+          where: { id: updatedCart.id },
+          data: {
+            items_count: { increment: 1 },
+            selling_price: cartSellingPrice,
+            total_discounts: cartDiscounts,
+            total_price: cartTotalPrice,
+          },
+          include: { cart_items: true },
+        });
       }
     });
   }
@@ -105,7 +137,7 @@ export class CartService {
     await this.productService.checkProductExists(updateCartDto.productId);
 
     if (!userId) {
-      return this.updateGuestCart(updateCartDto);
+      return this.guestCartService.updateGuestCart(updateCartDto);
     }
 
     return this.updateCartToUser(updateCartDto);
@@ -140,14 +172,14 @@ export class CartService {
       const totalDiscount = unitDiscount * newQuantity;
       const totalSellingPrice = totalItemPrice - totalDiscount;
 
-      return await tx.cart.update({
+      const updatedCart = await tx.cart.update({
         where: { id: cart.id },
         data: {
           cart_items: {
             update: {
               where: { id: cartItem.id },
               data: {
-                quantity: { increment: 1 },
+                quantity: { decrement: 1 },
                 item_price: unitPrice,
                 item_discount: unitDiscount,
                 selling_price: totalSellingPrice,
@@ -157,7 +189,32 @@ export class CartService {
         },
         include: { cart_items: true },
       });
+
+      const { cartDiscounts, cartSellingPrice, cartTotalPrice } =
+        this.calculateCartTotals(updatedCart.cart_items);
+
+      return await tx.cart.update({
+        where: { id: updatedCart.id },
+        data: {
+          items_count: { decrement: 1 },
+          selling_price: cartSellingPrice,
+          total_discounts: cartDiscounts,
+          total_price: cartTotalPrice,
+        },
+        include: { cart_items: true },
+      });
     });
+  }
+
+  async removeItemFromCartHandler(
+    removeCartItemDto: RemoveCartItemDto,
+    userId?: string,
+  ) {
+    if (!userId) {
+      return this.guestCartService.removeItemFromGuestCartItems(removeCartItemDto);
+    }
+
+    return this.removeItemFromCartItems(removeCartItemDto);
   }
 
   async removeItemFromCartItems(removeCartItemDto: RemoveCartItemDto) {
@@ -174,21 +231,25 @@ export class CartService {
         where: { id: cart.id },
         data: {
           cart_items: { delete: { id: cartItem.id } },
+          items_count: { decrement: 1 },
+          selling_price: cart.selling_price - cartItem.selling_price,
+          total_discounts: cart.total_discounts - cartItem.item_discount,
+          total_price: cart.total_price - cartItem.item_price,
         },
         include: { cart_items: true },
       });
     });
   }
 
-  //for Guest
-  async addToGuestCart(addToCartDto: AddToCartDto) {}
+  
 
-  async updateGuestCart(updateCartDto: AddToCartDto) {}
+ 
 
   //utility functions
   async checkExistsCart(cartId: string, userId?: string) {
     const cart = await this.databaseService.cart.findUnique({
       where: { id: cartId },
+      include: { cart_items: true },
     });
     if (!cart) throw new BadRequestException('آیدی کارت پیدا نشد');
 
@@ -196,5 +257,53 @@ export class CartService {
       throw new ForbiddenException('این کارت متعلق به کاربر دیگری است');
     }
     return cart;
+  }
+
+  async clearUserCart(clearCartDto: ClearCartDto) {
+    await this.checkExistsCart(clearCartDto.cartId);
+    return await this.databaseService.$transaction(async (tx) => {
+      await tx.cartItem.deleteMany({
+        where: { cartId: clearCartDto.cartId },
+      });
+      return await tx.cart.update({
+        where: { id: clearCartDto.cartId },
+        data: {
+          items_count: 0,
+          selling_price: 0,
+          total_discounts: 0,
+          total_price: 0,
+        },
+        include: { cart_items: true },
+      });
+    });
+  }
+
+  calculateCartTotals(
+    items: {
+      item_price: number;
+      item_discount: number;
+      selling_price: number;
+      quantity: number;
+    }[],
+  ) {
+    const totalDiscounts = items.reduce(
+      (prev, curr) => prev + curr.item_discount,
+      0,
+    );
+    const totalSellingPrice = items.reduce(
+      (prev, curr) => prev + curr.selling_price,
+      0,
+    );
+
+    const totalPrice = items.reduce(
+      (prev, curr) => prev + curr.item_price * curr.quantity,
+      0,
+    );
+
+    return {
+      cartDiscounts: totalDiscounts,
+      cartSellingPrice: totalSellingPrice,
+      cartTotalPrice: totalPrice,
+    };
   }
 }

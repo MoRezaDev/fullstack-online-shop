@@ -12,8 +12,12 @@ export class VerifyJwtAndAccess implements CanActivate {
     //verifying
     const token = request.cookies['token'] || request.headers['authorization'];
 
-    const { user_id } = await this.jwtService.verifyAsync(token);
-    request['user_id'] = user_id;
+    try {
+      const { user_id } = await this.jwtService.verifyAsync(token, {
+        secret: process.env.JWT_SECRET,
+      });
+      request['user_id'] = user_id;
+    } catch (err) {}
 
     return true;
   }

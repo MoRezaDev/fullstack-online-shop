@@ -12,7 +12,7 @@ export class UserService {
 
   async findAll() {
     return await this.databaseService.user.findMany({
-      include: { address: true,cart: {include: {cart_items: true}} },
+      include: { address: true, cart: { include: { cart_items: true } } },
     });
   }
 
@@ -34,7 +34,7 @@ export class UserService {
   async checkUserExists(id: string) {
     const user = await this.databaseService.user.findUnique({
       where: { id },
-      include: { address: true, cart: true },
+      include: { address: true, cart: { include: { cart_items: true } } },
     });
 
     if (!user) throw new NotFoundException('یوزر پیدا نشد');
