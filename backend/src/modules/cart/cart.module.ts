@@ -7,7 +7,7 @@ import { GuestCartService } from './guest-cart.service';
 
 @Module({
   controllers: [CartController],
-  providers: [CartService,GuestCartService],
-  imports: [DatabaseModule,ProductModule],
+  providers: [CartService, GuestCartService],
+  imports: [DatabaseModule, ProductModule],
 })
 export class CartModule {}

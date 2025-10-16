@@ -13,6 +13,7 @@ import { ProductModule } from './modules/product/product.module';
 import { SellerModule } from './modules/seller/seller.module';
 import { ColorModule } from './modules/color/color.module';
 import { CartModule } from './modules/cart/cart.module';
+import { InitModule } from './modules/init/init.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { CartModule } from './modules/cart/cart.module';
     SellerModule,
     ColorModule,
     CartModule,
+    InitModule,
   ],
   controllers: [AppController],
   providers: [

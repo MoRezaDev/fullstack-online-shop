@@ -13,6 +13,6 @@ model User {
     otp Otp?
     rating ProductRating[]
     comments Comment[]
-    // orders Order[]
+    orders Order[]
 
 }

@@ -4,35 +4,30 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
-import { ProductService } from '../product/product.service';
-import { CartService } from './cart.service';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { RemoveCartItemDto } from './dto/remove-cartItem.dto';
+import { ClearCartDto } from './dto/clear-cart.dto';
 
 @Injectable()
 export class GuestCartService {
-  constructor(
-    private databaseService: DatabaseService,
-    private productService: ProductService,
-    private cartService: CartService,
-  ) {}
+  constructor(private readonly databaseService: DatabaseService) {}
 
-  async addToGuestCart(addToCartDto: AddToCartDto) {
-    const { cartId, productId } = addToCartDto;
-
-    // verify cart ownership
-    const cart = await this.checkExistsGuestCart(cartId);
+  async addToGuestCart(addToCartDto: AddToCartDto, guestCartCookieId?: string) {
+    const { productId } = addToCartDto;
 
     return this.databaseService.$transaction(async (tx) => {
+      let cart: any;
+      if (!guestCartCookieId) {
+        cart = await tx.guestCart.create({ data: {} });
+      }
       const warehouse = await tx.warehouse.findUnique({
         where: { productId },
       });
       if (!warehouse) throw new BadRequestException('انبار پیدا نشد');
 
       const existing = await tx.guestCartItem.findFirst({
-        where: { guestCartId: cartId, productId },
+        where: { guestCartId: guestCartCookieId, productId },
       });
-
       if (existing) {
         // check order limit
         if (warehouse.order_limit <= existing.quantity) {
@@ -48,8 +43,8 @@ export class GuestCartService {
         const totalDiscount = unitDiscount * newQuantity;
         const totalSellingPrice = totalItemPrice - totalDiscount;
 
-        return await tx.guestCart.update({
-          where: { id: cart.id },
+        const updatedGuestCart = await tx.guestCart.update({
+          where: { id: guestCartCookieId },
           data: {
             cart_items: {
               update: {
@@ -65,13 +60,27 @@ export class GuestCartService {
           },
           include: { cart_items: true },
         });
+
+        const { cartDiscounts, cartSellingPrice, cartTotalPrice } =
+          this.calculateGuestCartTotals(updatedGuestCart.cart_items);
+
+        return await tx.guestCart.update({
+          where: { id: updatedGuestCart.id },
+          data: {
+            items_count: { increment: 1 },
+            selling_price: cartSellingPrice,
+            total_discounts: cartDiscounts,
+            total_price: cartTotalPrice,
+          },
+          include: { cart_items: true },
+        });
       } else {
         // create new item
         const unitPrice = warehouse.item_price;
         const unitDiscount = warehouse.item_discount ?? 0;
         const sellingPrice = unitPrice - unitDiscount;
 
-        return await tx.guestCart.update({
+        const updatedGuestCart = await tx.guestCart.update({
           where: { id: cart.id },
           data: {
             cart_items: {
@@ -86,21 +95,40 @@ export class GuestCartService {
           },
           include: { cart_items: true },
         });
+
+        const { cartDiscounts, cartSellingPrice, cartTotalPrice } =
+          this.calculateGuestCartTotals(updatedGuestCart.cart_items);
+
+        return await tx.guestCart.update({
+          where: { id: updatedGuestCart.id },
+          data: {
+            items_count: { increment: 1 },
+            selling_price: cartSellingPrice,
+            total_discounts: cartDiscounts,
+            total_price: cartTotalPrice,
+          },
+          include: { cart_items: true },
+        });
       }
     });
   }
 
-  async updateGuestCart(updateCartDto: AddToCartDto) {
-    const { cartId, productId } = updateCartDto;
+  async updateGuestCart(
+    updateCartDto: AddToCartDto,
+    guestCartCookieId?: string,
+  ) {
+    const { productId } = updateCartDto;
     return await this.databaseService.$transaction(async (tx) => {
-      const cart = await this.checkExistsGuestCart(cartId);
+      if (!guestCartCookieId)
+        throw new BadRequestException('آیدی کارت مهمان نامعتبر');
+      const cart = await this.checkExistsGuestCart(guestCartCookieId);
       const warehouse = await tx.warehouse.findUnique({
         where: { productId },
       });
       if (!warehouse) throw new BadRequestException('انبار پیدا نشد');
 
       const cartItem = await this.databaseService.guestCartItem.findFirst({
-        where: { guestCartId: cartId, productId },
+        where: { guestCartId: cart.id, productId },
       });
       if (!cartItem)
         throw new BadRequestException('این محصول در کارت شما وجود ندارد');
@@ -119,7 +147,7 @@ export class GuestCartService {
       const totalDiscount = unitDiscount * newQuantity;
       const totalSellingPrice = totalItemPrice - totalDiscount;
 
-      return await tx.cart.update({
+      const updatedGuestCart = await tx.guestCart.update({
         where: { id: cart.id },
         data: {
           cart_items: {
@@ -136,14 +164,30 @@ export class GuestCartService {
         },
         include: { cart_items: true },
       });
+
+      const { cartDiscounts, cartSellingPrice, cartTotalPrice } =
+        this.calculateGuestCartTotals(updatedGuestCart.cart_items);
+      return await tx.guestCart.update({
+        where: { id: cart.id },
+        data: {
+          items_count: { decrement: 1 },
+          selling_price: cartSellingPrice,
+          total_discounts: cartDiscounts,
+          total_price: cartTotalPrice,
+        },
+      });
     });
   }
 
-  async removeItemFromGuestCartItems(removeCartItemDto: RemoveCartItemDto) {
+  async removeItemFromGuestCartItems(
+    removeCartItemDto: RemoveCartItemDto,
+    guestCartCookieId?: string,
+  ) {
     const { cartId, cartItemId } = removeCartItemDto;
     return await this.databaseService.$transaction(async (tx) => {
-      const cart = await tx.guestCart.findUnique({ where: { id: cartId } });
-      if (!cart) throw new BadRequestException('آیدی کارت اشتباه است');
+      if (!guestCartCookieId)
+        throw new BadRequestException('آیدی کارت مهمان نامعتبر');
+      const cart = await this.checkExistsGuestCart(guestCartCookieId);
       const cartItem = await tx.guestCartItem.findFirst({
         where: { guestCartId: cartId, id: cartItemId },
       });
@@ -153,6 +197,29 @@ export class GuestCartService {
         where: { id: cart.id },
         data: {
           cart_items: { delete: { id: cartItem.id } },
+          items_count: { decrement: 1 },
+          selling_price: cart.selling_price - cartItem.selling_price,
+          total_discounts: cart.total_discounts - cartItem.item_discount,
+          total_price: cart.total_price - cartItem.item_price,
+        },
+        include: { cart_items: true },
+      });
+    });
+  }
+
+  async clearGuestCart(clearCartDto: ClearCartDto) {
+    await this.checkExistsGuestCart(clearCartDto.cartId);
+    return await this.databaseService.$transaction(async (tx) => {
+      await tx.guestCartItem.deleteMany({
+        where: { guestCartId: clearCartDto.cartId },
+      });
+      return await tx.guestCart.update({
+        where: { id: clearCartDto.cartId },
+        data: {
+          items_count: 0,
+          selling_price: 0,
+          total_discounts: 0,
+          total_price: 0,
         },
         include: { cart_items: true },
       });
@@ -164,8 +231,37 @@ export class GuestCartService {
     const cart = await this.databaseService.guestCart.findUnique({
       where: { id: cartId },
     });
-    if (!cart) throw new BadRequestException('آیدی کارت پیدا نشد');
+    if (!cart) throw new BadRequestException('آیدی کارت مهمان پیدا نشد');
 
     return cart;
+  }
+
+  calculateGuestCartTotals(
+    items: {
+      item_price: number;
+      item_discount: number;
+      selling_price: number;
+      quantity: number;
+    }[],
+  ) {
+    const totalDiscounts = items.reduce(
+      (prev, curr) => prev + curr.item_discount,
+      0,
+    );
+    const totalSellingPrice = items.reduce(
+      (prev, curr) => prev + curr.selling_price,
+      0,
+    );
+
+    const totalPrice = items.reduce(
+      (prev, curr) => prev + curr.item_price * curr.quantity,
+      0,
+    );
+
+    return {
+      cartDiscounts: totalDiscounts,
+      cartSellingPrice: totalSellingPrice,
+      cartTotalPrice: totalPrice,
+    };
   }
 }

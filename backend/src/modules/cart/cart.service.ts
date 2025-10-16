@@ -19,12 +19,19 @@ export class CartService {
     private guestCartService: GuestCartService,
   ) {}
 
-  async addToCartHandler(addToCartDto: AddToCartDto, userId?: string) {
+  async addToCartHandler(
+    addToCartDto: AddToCartDto,
+    userId?: string,
+    guestCartCookieId?: string,
+  ) {
     // validate product exists first
     await this.productService.checkProductExists(addToCartDto.productId);
 
     if (!userId) {
-      const result = await this.guestCartService.addToGuestCart(addToCartDto);
+      const result = await this.guestCartService.addToGuestCart(
+        addToCartDto,
+        guestCartCookieId,
+      );
       return { result, guest_cart_id: result.id };
     }
 
@@ -83,6 +90,7 @@ export class CartService {
 
         const { cartDiscounts, cartSellingPrice, cartTotalPrice } =
           this.calculateCartTotals(updatedCart.cart_items);
+
         return await tx.cart.update({
           where: { id: updatedCart.id },
           data: {
@@ -132,12 +140,19 @@ export class CartService {
     });
   }
 
-  async updateCartHandler(updateCartDto: UpdateCartDto, userId?: string) {
+  async updateCartHandler(
+    updateCartDto: UpdateCartDto,
+    userId?: string,
+    guestCartCookieId?: string,
+  ) {
     // validate product exists first
     await this.productService.checkProductExists(updateCartDto.productId);
 
     if (!userId) {
-      return this.guestCartService.updateGuestCart(updateCartDto);
+      return this.guestCartService.updateGuestCart(
+        updateCartDto,
+        guestCartCookieId,
+      );
     }
 
     return this.updateCartToUser(updateCartDto);
@@ -209,9 +224,13 @@ export class CartService {
   async removeItemFromCartHandler(
     removeCartItemDto: RemoveCartItemDto,
     userId?: string,
+    guestCartCookieId?: string,
   ) {
     if (!userId) {
-      return this.guestCartService.removeItemFromGuestCartItems(removeCartItemDto);
+      return this.guestCartService.removeItemFromGuestCartItems(
+        removeCartItemDto,
+        guestCartCookieId,
+      );
     }
 
     return this.removeItemFromCartItems(removeCartItemDto);
@@ -240,10 +259,6 @@ export class CartService {
       });
     });
   }
-
-  
-
- 
 
   //utility functions
   async checkExistsCart(cartId: string, userId?: string) {
