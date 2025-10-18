@@ -40,6 +40,8 @@ model Product {
 
     seo Seo?
 
+    orderItems OrderItem[]
+
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

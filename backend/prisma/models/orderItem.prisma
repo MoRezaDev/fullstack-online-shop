@@ -1,0 +1,21 @@
+model OrderItem {
+    id String @id @default(cuid())
+
+    quantity Int
+    item_price Int
+    item_discount Int
+
+    total_discounts Int
+    total_price Int
+    selling_price Int
+
+    productId String
+    product Product @relation(fields: [productId],references: [id],onDelete: Cascade)
+
+
+    orderId String
+    order Order @relation(fields: [orderId],references: [id],onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
