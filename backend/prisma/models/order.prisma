@@ -32,8 +32,8 @@ model PaymentDetail {
     verify_code Int @unique
 
     price Int
-    paid_price Int
-    paid_date String
+    paid_price Int @default(0)
+    paid_date String @default("pending")
 
     orderId String
     order Order @relation(fields: [orderId],references: [id],onDelete: Cascade)

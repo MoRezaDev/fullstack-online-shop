@@ -76,11 +76,13 @@ export class AuthService {
     const user = await this.userService.checkUserExists(userId);
 
     return {
+      id: user.id,
       mobile: user.mobile,
       email: user.email,
       full_name: user.full_name,
       address: user.address,
       cart: user.cart,
+      orders: user.orders,
     };
   }
 }

@@ -15,6 +15,7 @@ import { ColorModule } from './modules/color/color.module';
 import { CartModule } from './modules/cart/cart.module';
 import { InitModule } from './modules/init/init.module';
 import { OrderModule } from './modules/order/order.module';
+import { AddressModule } from './modules/address/address.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { OrderModule } from './modules/order/order.module';
     CartModule,
     InitModule,
     OrderModule,
+    AddressModule,
   ],
   controllers: [AppController],
   providers: [
