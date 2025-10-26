@@ -28,7 +28,7 @@ export class OrderController {
     console.log(user_id);
     const newCreateOrderDto = { ...createOrderDto, userId: user_id };
     const data = await this.orderService.createOrder(newCreateOrderDto);
-    return res.redirect(`/pay?id=${data.id}`);
+    return res.redirect(`/payment/pay?id=${data.id}`);
   }
 
   @Delete('remove-all')

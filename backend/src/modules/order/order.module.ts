@@ -8,6 +8,7 @@ import { CartModule } from '../cart/cart.module';
 @Module({
   controllers: [OrderController],
   providers: [OrderService],
-  imports: [DatabaseModule,UserModule,CartModule],
+  imports: [DatabaseModule, UserModule, CartModule],
+  exports: [OrderService],
 })
 export class OrderModule {}

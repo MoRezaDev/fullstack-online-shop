@@ -16,6 +16,7 @@ import { CartModule } from './modules/cart/cart.module';
 import { InitModule } from './modules/init/init.module';
 import { OrderModule } from './modules/order/order.module';
 import { AddressModule } from './modules/address/address.module';
+import { PaymentModule } from './modules/payment/payment.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { AddressModule } from './modules/address/address.module';
     InitModule,
     OrderModule,
     AddressModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [

@@ -4,6 +4,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UserService } from '../user/user.service';
 import { randomInt } from 'crypto';
 import { CartService } from '../cart/cart.service';
+import { TransactionType } from '../../common/helper/types';
 
 @Injectable()
 export class OrderService {
@@ -67,5 +68,23 @@ export class OrderService {
 
   async removeAll(userId: string) {
     return await this.databaseService.order.deleteMany({ where: { userId } });
+  }
+
+  async checkOrderExist(orderId: string, transaction?: TransactionType) {
+    const tx = transaction ? transaction : this.databaseService;
+
+    const order = await tx.order.findUnique({
+      where: { id: orderId },
+      include: {
+        address: true,
+        buyer_detail: true,
+        order_items: true,
+        payment_details: true,
+      },
+    });
+
+    if (!order) throw new BadRequestException('آیدی سفارش اشتباه است');
+
+    return order;
   }
 }
