@@ -77,9 +77,8 @@ export class OrderService {
       where: { id: orderId },
       include: {
         address: true,
-        buyer_detail: true,
         order_items: true,
-        payment_details: true,
+        payment_details: { include: { transaction_history: true } },
       },
     });
 

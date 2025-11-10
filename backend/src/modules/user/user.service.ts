@@ -36,7 +36,13 @@ export class UserService {
       where: { id },
       include: {
         address: true,
-        orders: {include: {order_items: true,address: true,buyer_detail: true,payment_details: true}},
+        orders: {
+          include: {
+            order_items: true,
+            address: true,
+            payment_details: { include: { transaction_history: true } },
+          },
+        },
         cart: { include: { cart_items: true } },
       },
     });

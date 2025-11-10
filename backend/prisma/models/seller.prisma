@@ -9,6 +9,8 @@ model Seller {
 
     brands Brand[]
 
+    buyers BuyerDetail[]
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }

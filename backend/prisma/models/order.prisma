@@ -13,11 +13,10 @@ model Order {
     addressId String
     address Address @relation(fields: [addressId],references: [id])
 
-    payment_details PaymentDetail[]
+    payment_details PaymentDetail?
 
     userId String
     user User @relation(fields: [userId],references: [id],onDelete: Cascade)
-    buyer_detail BuyerDetail?
 
     order_items OrderItem[]
 
@@ -30,13 +29,30 @@ model PaymentDetail {
 
     status String @default("pending")
     verify_code Int @unique
+    transaction_code Int? @unique 
 
     price Int
     paid_price Int @default(0)
     paid_date String @default("pending")
 
-    orderId String
+    transaction_history TransactionHistory[]
+
+    orderId String @unique
     order Order @relation(fields: [orderId],references: [id],onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model TransactionHistory {
+    id String @id @default(cuid())
+
+    status String @default("pending")
+    transaction_date String 
+    transaction_time String
+
+    paymentDetailId String 
+    paymentDetail PaymentDetail @relation(fields: [paymentDetailId],references: [id],onDelete: Cascade)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

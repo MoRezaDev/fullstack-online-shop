@@ -27,3 +27,33 @@ export function createDefaultSeo(title: string) {
 
   return seo;
 }
+
+export function toPersianDateTime(
+  format: 'numbers' | 'long',
+  date: Date = new Date(),
+): { date: string; time: string } {
+  const dateFormatter = new Intl.DateTimeFormat('fa-IR', {
+    year: 'numeric',
+    month: format === 'long' ? 'long' : '2-digit',
+    day: '2-digit',
+  });
+
+  const timeFormatter = new Intl.DateTimeFormat('fa-IR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  });
+
+  let formattedDate = dateFormatter.format(date);
+  const formattedTime = timeFormatter.format(date);
+
+  if (format === 'numbers') {
+    formattedDate = formattedDate.replaceAll('-', '/');
+  }
+
+  return {
+    date: formattedDate,
+    time: formattedTime,
+  };
+}

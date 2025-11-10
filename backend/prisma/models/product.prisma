@@ -27,6 +27,8 @@ model Product {
     avg_rating Float @default(0)
     rating_count Int @default(0)
 
+    buyers BuyerDetail[]
+
 
     cart_items CartItem[]
 

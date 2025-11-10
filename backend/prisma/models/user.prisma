@@ -7,6 +7,8 @@ model User {
     password String?
     role String @default("user")
     is_user_active Boolean @default(true)
+
+    buyer_details BuyerDetail?
     
     address Address[]
     cart Cart?
