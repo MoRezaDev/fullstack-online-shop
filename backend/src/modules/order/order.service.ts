@@ -56,6 +56,7 @@ export class OrderService {
                 selling_price: item.selling_price,
                 total_discounts: item.item_discount * item.quantity,
                 total_price: item.item_price * item.quantity,
+                sellerId: item.sellerId,
               })),
             },
           },

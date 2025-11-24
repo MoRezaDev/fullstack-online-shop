@@ -60,7 +60,7 @@ export class ProductService {
         brand: true,
         category: true,
         colors: true,
-        comments: true,
+        comments: { include: { buyer_detail: true } },
         product_rating: true,
         specifications: true,
         main_specification: true,
@@ -100,7 +100,8 @@ export class ProductService {
 
   async checkProductExists(productId: string) {
     const product = await this.databaseService.product.findUnique({
-      where: { id: productId }, include: {warehouse: true}
+      where: { id: productId },
+      include: { warehouse: true },
     });
     if (!product) throw new BadRequestException('آیدی محصول پیدا نشد');
     return product;

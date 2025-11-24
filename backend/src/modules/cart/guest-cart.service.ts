@@ -13,7 +13,7 @@ export class GuestCartService {
   constructor(private readonly databaseService: DatabaseService) {}
 
   async addToGuestCart(addToCartDto: AddToCartDto, guestCartCookieId?: string) {
-    const { productId } = addToCartDto;
+    const { productId, sellerId } = addToCartDto;
 
     return this.databaseService.$transaction(async (tx) => {
       let cart: any;
@@ -90,6 +90,7 @@ export class GuestCartService {
                 item_price: unitPrice,
                 item_discount: unitDiscount,
                 selling_price: sellingPrice,
+                sellerId,
               },
             },
           },

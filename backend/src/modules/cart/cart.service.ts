@@ -40,7 +40,7 @@ export class CartService {
   }
 
   async addToCartForUser(addToCartDto: AddToCartDto, userId: string) {
-    const { cartId, productId } = addToCartDto;
+    const { cartId, productId, sellerId } = addToCartDto;
 
     // verify cart ownership
     const cart = await this.checkExistsCart(cartId, userId);
@@ -117,6 +117,7 @@ export class CartService {
                 item_price: unitPrice,
                 item_discount: unitDiscount,
                 selling_price: sellingPrice,
+                sellerId,
               },
             },
           },

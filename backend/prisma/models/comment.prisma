@@ -8,6 +8,12 @@ model Comment {
     pros String[]
     cons String[]
 
+    comment_date String
+
+    rate Int
+
+    reaction CommentReaction?
+
     buyer_detail BuyerDetail?
 
     productId String
@@ -20,3 +26,12 @@ model Comment {
     updatedAt DateTime @updatedAt
 }
 
+model CommentReaction {
+id String @id @default(cuid())
+
+likes Int @default(0)
+dislikes Int @default(0)
+
+commentId String @unique
+comment Comment @relation(fields: [commentId],references: [id],onDelete: Cascade)
+}

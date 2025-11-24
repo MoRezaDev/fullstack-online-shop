@@ -91,6 +91,7 @@ export class InitService {
               selling_price: guestCartItem.selling_price,
               productId: guestCartItem.productId,
               cartId: user.cart!.id,
+              sellerId: guestCartItem.sellerId,
             },
           });
         }

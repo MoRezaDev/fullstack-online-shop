@@ -11,6 +11,10 @@ model Seller {
 
     buyers BuyerDetail[]
 
+    order_items OrderItem[]
+    cart_items CartItem[]
+    guest_cart_items GuestCartItem[]
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
