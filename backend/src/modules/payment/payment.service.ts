@@ -69,8 +69,19 @@ export class PaymentService {
             },
           },
         },
-        include: { payment_details: true },
+        include: { payment_details: true, order_items: true },
       });
+
+      await Promise.all(
+        updated.order_items.map((item) =>
+          tx.warehouse.update({
+            where: { productId: item.productId },
+            data: {
+              quantity: { decrement: item.quantity },
+            },
+          }),
+        ),
+      );
 
       return {
         success: true,

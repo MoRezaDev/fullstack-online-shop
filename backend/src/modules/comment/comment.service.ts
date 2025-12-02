@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
 import { SubmitCommentDto } from './dto/submit-comment.dto';
 import { toPersianDateTime } from '../../common/helper/functions';
@@ -56,5 +56,28 @@ export class CommentService {
         },
       });
     }
+  }
+
+  // for admin
+  async approveComment(commentId: string) {
+    const comment = await this.checkCommentExists(commentId);
+
+    await this.databaseService.comment.update({
+      where: { id: comment.id },
+      data: { approved: true },
+    });
+
+    return {
+      success: true,
+    };
+  }
+
+  //utility
+  async checkCommentExists(commentId: string) {
+    const comment = await this.databaseService.comment.findUnique({
+      where: { id: commentId },
+    });
+    if (!comment) throw new NotFoundException('کامنتی با این آیدی وجود ندارد');
+    return comment;
   }
 }

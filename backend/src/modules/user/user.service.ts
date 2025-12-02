@@ -2,12 +2,24 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DatabaseService } from '../../database/database.service';
+import { randomInt } from 'crypto';
 
 @Injectable()
 export class UserService {
   constructor(private databaseService: DatabaseService) {}
   async create(createUserDto: CreateUserDto) {
-    return await this.databaseService.user.create({ data: createUserDto });
+    const otp = {
+      code: randomInt(10000, 99999),
+      expires_at: new Date(Date.now() + 1 * 60 * 1000),
+    };
+    return await this.databaseService.user.create({
+      data: {
+        ...createUserDto,
+        otp: {
+          create: otp,
+        },
+      },
+    });
   }
 
   async findAll() {
