@@ -5,15 +5,44 @@ model Product {
     title_fa String
     description String
     url String
+    main_image_url String?
+    images_url String[]
+    product_code Int @unique
 
     warehouse Warehouse?
+
+    badges String[]
+
+    specifications Specification[]
+    main_specification MainSpecification?
 
     brandId String
     brand Brand @relation(fields: [brandId],references: [id],onDelete: Cascade)
     brand_category_url String
 
+    categoryId String
+    category Category @relation(fields: [categoryId],references: [id],onDelete: Cascade)
+
+    product_rating ProductRating[]
+    avg_rating Float @default(0)
+    rating_count Int @default(0)
+
+    buyers BuyerDetail[]
+
 
     cart_items CartItem[]
+
+    guest_cart_items GuestCartItem[]
+
+    comments Comment[]
+
+    sellers Seller[]
+
+    colors Color[]
+
+    seo Seo?
+
+    orderItems OrderItem[]
 
 
     createdAt DateTime @default(now())

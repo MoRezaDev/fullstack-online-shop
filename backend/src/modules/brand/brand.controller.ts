@@ -26,7 +26,7 @@ export class BrandController {
     return this.brandService.findAll();
   }
 
-  @Delete()
+  @Delete('remove-all')
   async removeAll() {
     return this.brandService.removeAll();
   }

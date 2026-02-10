@@ -1,0 +1,28 @@
+model Seo {
+  id                  String   @id @default(cuid())
+  title               String
+  description         String
+  keywords            String[]
+  slug                String   @unique
+  canonical           String?
+  image               String?
+  og_title            String?
+  og_description      String?
+  og_image            String?
+  twitter_title       String?
+  twitter_description String?
+  twitter_image       String?
+
+  categoryId String? @unique
+  category Category? @relation(fields: [categoryId],references: [id],onDelete: Cascade)
+
+
+  brandId String? @unique
+  brand Brand? @relation(fields: [brandId],references: [id],onDelete: Cascade)
+
+  productId String? @unique 
+  product Product? @relation(fields: [productId],references: [id],onDelete: Cascade)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}

@@ -1,0 +1,35 @@
+model Specification {
+    id String @id @default(cuid())
+
+    title String
+    attributes Attribute[]
+
+    productId String
+    product Product @relation(fields: [productId],references: [id],onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Attribute {
+    id String @id @default(cuid())
+
+    title String
+    value String[]
+
+    main_specification MainSpecification?
+
+    specificationId String?
+    specification Specification? @relation(fields: [specificationId],references: [id],onDelete: Cascade)
+}
+
+model MainSpecification {
+    id String @id @default(cuid())
+
+    attribiuteId String @unique
+    atrribute Attribute @relation(fields: [attribiuteId],references: [id],onDelete: Cascade)
+
+    productId String @unique
+    product Product @relation(fields: [productId],references: [id],onDelete: Cascade)
+
+}

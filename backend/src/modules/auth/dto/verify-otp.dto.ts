@@ -4,6 +4,6 @@ export class VerifyOtpDto {
   @ApiProperty({ example: 12345, required: true })
   code: number;
 
-  @ApiProperty({ example: '09111923456', required: true })
+  @ApiProperty({ example: '09111932341', required: true })
   mobile: string;
 }

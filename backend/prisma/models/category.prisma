@@ -12,6 +12,10 @@ model Category {
 
     brands Brand[]
 
+    seo Seo?
+
+    products Product[]
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }

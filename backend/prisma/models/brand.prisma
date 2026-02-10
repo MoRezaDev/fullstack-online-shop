@@ -9,6 +9,10 @@ model Brand {
 
     products Product[]
 
+    sellers Seller[]
+
+    seo Seo?
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }

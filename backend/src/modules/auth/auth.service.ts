@@ -5,6 +5,7 @@ import { randomInt } from 'crypto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -67,7 +68,7 @@ export class AuthService {
     return await this.jwtService.signAsync(
       { user_id: user.id },
       {
-        expiresIn: '10m',
+        expiresIn: '30m',
       },
     );
   }
@@ -76,10 +77,13 @@ export class AuthService {
     const user = await this.userService.checkUserExists(userId);
 
     return {
+      id: user.id,
       mobile: user.mobile,
       email: user.email,
       full_name: user.full_name,
       address: user.address,
+      cart: user.cart,
+      orders: user.orders,
     };
   }
 }

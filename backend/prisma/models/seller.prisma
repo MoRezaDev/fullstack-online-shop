@@ -1,0 +1,20 @@
+model Seller {
+    id String @id @default(cuid())
+
+    title String
+    title_fa String
+    url String
+
+    products Product[]
+
+    brands Brand[]
+
+    buyers BuyerDetail[]
+
+    order_items OrderItem[]
+    cart_items CartItem[]
+    guest_cart_items GuestCartItem[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}

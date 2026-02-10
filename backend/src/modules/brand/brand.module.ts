@@ -8,5 +8,6 @@ import { CategoryModule } from '../category/category.module';
   controllers: [BrandController],
   providers: [BrandService],
   imports: [DatabaseModule,CategoryModule],
+  exports: [BrandService]
 })
 export class BrandModule {}
